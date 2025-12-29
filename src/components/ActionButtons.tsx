@@ -20,7 +20,7 @@ const ActionButtons = ({ romanizedName, cardRef }: ActionButtonsProps) => {
     try {
       const hieroglyphText = romanizedToHieroglyphText(romanizedName);
       await navigator.clipboard.writeText(hieroglyphText || romanizedName.toUpperCase());
-      toast.success('상형문자가 클립보드에 복사되었습니다', {
+      toast.success('상형문자가 복사되었습니다!', {
         className: 'font-sans',
       });
     } catch {
@@ -29,22 +29,23 @@ const ActionButtons = ({ romanizedName, cardRef }: ActionButtonsProps) => {
   };
 
   const handleSave = async () => {
-    if (!cardRef.current) return;
+    const target = document.getElementById('cartouche-card') ?? cardRef.current;
+    if (!target) return;
     
     try {
       if (document.fonts?.ready) {
         await document.fonts.ready;
       }
 
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: '#F7F5F0',
+      const canvas = await html2canvas(target, {
+        backgroundColor: '#F9F7F2',
         scale: 3,
         useCORS: true,
         logging: false,
       });
       
       const link = document.createElement('a');
-      link.download = `hieroglyph-${romanizedName.toLowerCase().replace(/\s/g, '-')}.png`;
+      link.download = `egyptian-name-${romanizedName.toLowerCase().replace(/\s/g, '-')}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
       
@@ -57,10 +58,12 @@ const ActionButtons = ({ romanizedName, cardRef }: ActionButtonsProps) => {
   };
 
   const handleShare = async () => {
+    const hieroglyphText = romanizedToHieroglyphText(romanizedName);
+    const shareUrl = `${window.location.origin}/`;
     const shareData = {
-      title: '고대 이집트어 번역',
-      text: `${romanizedName}의 이집트 상형문자`,
-      url: window.location.href,
+      title: '고대 이집트어 번역기',
+      text: `${romanizedName.toUpperCase()}\n${hieroglyphText || ''}`.trim(),
+      url: shareUrl,
     };
 
     try {

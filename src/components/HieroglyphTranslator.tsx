@@ -169,12 +169,14 @@ const HieroglyphTranslator = () => {
             {isTranslating && <LoadingState />}
           </AnimatePresence>
 
-          {/* Result: Cartouche */}
+          {/* Result Card (capture target) */}
           <div className="mt-8">
-            <Cartouche
-              romanizedName={romanizedName}
-              isVisible={showResult}
-            />
+            <div
+              id="cartouche-card"
+              className="flex flex-col items-center rounded-2xl p-8 bg-[#F9F7F2]"
+            >
+              <Cartouche romanizedName={romanizedName} isVisible={showResult} />
+            </div>
           </div>
 
           {/* Action Buttons */}
