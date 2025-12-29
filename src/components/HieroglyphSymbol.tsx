@@ -1,16 +1,18 @@
 import { motion } from 'framer-motion';
+import { HIEROGLYPH_MAP } from '@/constants/hieroglyphMapping';
 
 interface HieroglyphSymbolProps {
   letter: string;
   index: number;
 }
 
-// Placeholder URLs - replace with actual hieroglyph images
-const getHieroglyphUrl = (letter: string): string => {
-  return `https://via.placeholder.com/100/F5F0E8/8B7355?text=${letter}`;
+const getHieroglyphGlyph = (letter: string): string => {
+  return HIEROGLYPH_MAP[letter.toUpperCase()] ?? letter;
 };
 
 const HieroglyphSymbol = ({ letter }: HieroglyphSymbolProps) => {
+  const glyph = getHieroglyphGlyph(letter);
+
   return (
     <motion.div
       className="hieroglyph-symbol"
@@ -32,12 +34,14 @@ const HieroglyphSymbol = ({ letter }: HieroglyphSymbolProps) => {
         }
       }}
     >
-      <img 
-        src={getHieroglyphUrl(letter)} 
-        alt={`Hieroglyph for ${letter}`}
-        className="w-full h-full object-contain"
-        loading="lazy"
-      />
+      <span
+        className="hieroglyph-glyph text-gold select-none"
+        style={{ fontFamily: "'Noto Sans Egyptian Hieroglyphs', serif" }}
+        title={`Original: ${letter}`}
+        aria-label={`Hieroglyph for ${letter}`}
+      >
+        {glyph}
+      </span>
     </motion.div>
   );
 };

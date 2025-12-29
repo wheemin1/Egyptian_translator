@@ -191,11 +191,10 @@
     margin: 0 2px;
   }
 
-  .hieroglyph-symbol img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    filter: sepia(20%) saturate(80%);
+  .hieroglyph-glyph {
+    line-height: 1;
+    font-size: 2.25rem;
+    filter: drop-shadow(0 1px 0 hsl(var(--warm-shadow) / 0.25));
   }
 
   /* Action Button */

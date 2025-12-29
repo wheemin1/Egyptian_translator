@@ -2,6 +2,7 @@ import { Copy, Download, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import html2canvas from 'html2canvas';
+import { romanizedToHieroglyphText } from '@/constants/hieroglyphMapping';
 import {
   Tooltip,
   TooltipContent,
@@ -17,8 +18,9 @@ interface ActionButtonsProps {
 const ActionButtons = ({ romanizedName, cardRef }: ActionButtonsProps) => {
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(romanizedName.toUpperCase());
-      toast.success('클립보드에 복사되었습니다', {
+      const hieroglyphText = romanizedToHieroglyphText(romanizedName);
+      await navigator.clipboard.writeText(hieroglyphText || romanizedName.toUpperCase());
+      toast.success('상형문자가 클립보드에 복사되었습니다', {
         className: 'font-sans',
       });
     } catch {
@@ -30,6 +32,10 @@ const ActionButtons = ({ romanizedName, cardRef }: ActionButtonsProps) => {
     if (!cardRef.current) return;
     
     try {
+      if (document.fonts?.ready) {
+        await document.fonts.ready;
+      }
+
       const canvas = await html2canvas(cardRef.current, {
         backgroundColor: '#F7F5F0',
         scale: 3,
