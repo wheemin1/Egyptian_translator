@@ -1,0 +1,274 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Warm Alabaster Theme */
+    --background: 40 30% 95%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    /* Matte Gold Primary */
+    --primary: 40 45% 55%;
+    --primary-foreground: 0 0% 10%;
+
+    --secondary: 40 20% 92%;
+    --secondary-foreground: 0 0% 30%;
+
+    --muted: 40 15% 88%;
+    --muted-foreground: 0 0% 40%;
+
+    --accent: 40 50% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 20% 85%;
+    --input: 40 20% 85%;
+    --ring: 40 45% 55%;
+
+    --radius: 1rem;
+
+    /* Custom Colors */
+    --alabaster: 40 30% 95%;
+    --gold-matte: 40 45% 55%;
+    --gold-light: 42 55% 65%;
+    --gold-dark: 38 50% 42%;
+    --soft-black: 0 0% 10%;
+    --gray-text: 0 0% 40%;
+    --warm-shadow: 35 20% 60%;
+    
+    /* Premium Shadows */
+    --shadow-soft: 0 20px 40px -10px hsl(35 20% 60% / 0.4);
+    --shadow-elevated: 0 30px 60px -15px hsl(35 20% 60% / 0.5);
+    --shadow-glow: 0 0 30px hsl(40 45% 55% / 0.25);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased;
+    font-family: 'Noto Serif KR', serif;
+    background-color: hsl(var(--alabaster));
+  }
+}
+
+@layer components {
+  /* Alabaster Background with Noise */
+  .alabaster-bg {
+    background-color: hsl(var(--alabaster));
+    position: relative;
+  }
+
+  .alabaster-bg::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glassmorphism Card */
+  .glass-card {
+    background: hsl(0 0% 100% / 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  /* Gold Input Focus */
+  .gold-input {
+    border-bottom: 2px solid hsl(var(--border));
+    transition: all 0.3s ease;
+  }
+
+  .gold-input:focus {
+    border-color: hsl(var(--gold-matte));
+    box-shadow: 0 4px 12px -4px hsl(var(--gold-matte) / 0.3);
+  }
+
+  /* Matte Gold Button */
+  .gold-button {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--gold-light)) 0%,
+      hsl(var(--gold-matte)) 100%
+    );
+    color: hsl(var(--soft-black));
+    font-weight: 600;
+    box-shadow: 
+      var(--shadow-soft),
+      inset 0 1px 0 hsl(0 0% 100% / 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .gold-button:hover {
+    box-shadow: 
+      var(--shadow-elevated),
+      inset 0 1px 0 hsl(0 0% 100% / 0.3);
+  }
+
+  .gold-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Ornamental Cartouche Frame */
+  .cartouche-frame {
+    position: relative;
+    background: linear-gradient(180deg, hsl(40 35% 96%) 0%, hsl(40 25% 92%) 100%);
+    border-radius: 60px / 30px;
+    padding: 2rem 1.5rem;
+  }
+
+  .cartouche-frame::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 66px / 36px;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gold-light)) 0%,
+      hsl(var(--gold-matte)) 30%,
+      hsl(var(--gold-dark)) 60%,
+      hsl(var(--gold-matte)) 80%,
+      hsl(var(--gold-light)) 100%
+    );
+    z-index: -1;
+    box-shadow: 
+      0 8px 24px hsl(var(--gold-dark) / 0.25),
+      inset 0 2px 0 hsl(var(--gold-light) / 0.5);
+  }
+
+  /* Cartouche End Caps */
+  .cartouche-cap {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 45%;
+    height: 14px;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--gold-dark)) 0%,
+      hsl(var(--gold-light)) 25%,
+      hsl(var(--gold-matte)) 50%,
+      hsl(var(--gold-light)) 75%,
+      hsl(var(--gold-dark)) 100%
+    );
+    border-radius: 7px;
+    box-shadow: 
+      0 3px 8px hsl(var(--gold-dark) / 0.35),
+      inset 0 1px 0 hsl(var(--gold-light) / 0.6);
+  }
+
+  .cartouche-cap-top { top: -10px; }
+  .cartouche-cap-bottom { bottom: -10px; }
+
+  /* Hieroglyph Symbol */
+  .hieroglyph-symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 56px;
+    margin: 0 2px;
+  }
+
+  .hieroglyph-symbol img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: sepia(20%) saturate(80%);
+  }
+
+  /* Action Button */
+  .action-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: hsl(0 0% 100% / 0.9);
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 4px 12px hsl(var(--warm-shadow) / 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .action-btn:hover {
+    background: hsl(0 0% 100%);
+    border-color: hsl(var(--gold-matte));
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+  }
+
+  /* Romanized Text */
+  .romanized-text {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  /* Scarab Spinner */
+  @keyframes scarabPulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.1); opacity: 1; }
+  }
+
+  .scarab-pulse {
+    animation: scarabPulse 1.2s ease-in-out infinite;
+  }
+
+  /* Loading shimmer */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .loading-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--gold-matte) / 0.3) 0%,
+      hsl(var(--gold-light) / 0.6) 50%,
+      hsl(var(--gold-matte) / 0.3) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  .font-cinzel {
+    font-family: 'Cinzel', serif;
+  }
+
+  .text-soft-black {
+    color: hsl(var(--soft-black));
+  }
+
+  .text-gray {
+    color: hsl(var(--gray-text));
+  }
+
+  .text-gold {
+    color: hsl(var(--gold-matte));
+  }
+
+  .bg-gold {
+    background-color: hsl(var(--gold-matte));
+  }
+}
