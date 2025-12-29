@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Pyramid, ScrollText, Feather, Shield, HelpCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import {
   Accordion,
   AccordionContent,
@@ -263,6 +264,15 @@ export default function LandingSections() {
             <p className="font-inter text-sm text-alabaster/70 leading-relaxed">
               © 2025 Ancient Egypt Lab. All rights reserved.
             </p>
+
+            <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 font-inter text-xs text-alabaster/70">
+              <Link to="/privacy" className="underline underline-offset-4 hover:text-alabaster">
+                Privacy Policy
+              </Link>
+              <Link to="/terms" className="underline underline-offset-4 hover:text-alabaster">
+                Terms of Service
+              </Link>
+            </nav>
 
             <p className="font-inter text-xs text-alabaster/60 leading-relaxed">
               Disclaimer: 이 서비스는 엔터테인먼트 및 교육 목적으로 제작되었습니다. 본 번역기는

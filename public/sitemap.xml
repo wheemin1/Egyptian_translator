@@ -3,4 +3,10 @@
   <url>
     <loc>https://egyptiantranslator.netlify.app/</loc>
   </url>
+  <url>
+    <loc>https://egyptiantranslator.netlify.app/privacy</loc>
+  </url>
+  <url>
+    <loc>https://egyptiantranslator.netlify.app/terms</loc>
+  </url>
 </urlset>
