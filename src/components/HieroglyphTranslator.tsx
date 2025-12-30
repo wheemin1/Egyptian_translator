@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Pencil } from 'lucide-react';
+import { ChevronRight, Pencil } from 'lucide-react';
 import { romanizeKorean } from '@/lib/romanizer';
 import Cartouche from '@/components/Cartouche';
 import ActionButtons from '@/components/ActionButtons';
 import LoadingState from '@/components/LoadingState';
+import { VIKING_RUNE_CONVERTER_URL } from '@/constants/externalLinks';
 
 const HieroglyphTranslator = () => {
   // State Management
@@ -187,6 +188,18 @@ const HieroglyphTranslator = () => {
                   romanizedName={romanizedName}
                   cardRef={cardRef}
                 />
+
+                {/* Cross-promo banner (below action icons) */}
+                <a
+                  href={VIKING_RUNE_CONVERTER_URL}
+                  className="mt-4 flex w-full items-center justify-between gap-3 rounded-xl border border-gold-dark/25 bg-card/70 px-4 py-3 text-sm text-soft-black transition-colors hover:bg-card"
+                  aria-label="룬 문자 변환기로 이동"
+                >
+                  <span className="text-muted-foreground">
+                    내 이름을 <span className="text-gold-dark font-semibold">고대 북유럽 룬 문자</span>로도 보고 싶다면?
+                  </span>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-gold-dark" aria-hidden="true" />
+                </a>
               </div>
             )}
           </AnimatePresence>

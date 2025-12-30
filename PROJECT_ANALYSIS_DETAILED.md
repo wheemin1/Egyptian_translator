@@ -17,6 +17,73 @@
 8. [사용자 경험 (UX) 흐름](#사용자-경험-ux-흐름)
 9. [애니메이션 및 인터랙션](#애니메이션-및-인터랙션)
 10. [최적화 및 성능](#최적화-및-성능)
+11. [최근 진행사항 / 배포 체크리스트](#최근-진행사항--배포-체크리스트)
+
+---
+
+## 최근 진행사항 / 배포 체크리스트
+
+> 기준일: 2025년 12월 29일
+
+이 섹션은 “분석 문서”에 더해, 실제 운영/배포를 위해 진행된 변경사항을 기록합니다.
+
+### ✅ 배포(Netlify) 설정
+- `netlify.toml` 추가
+  - Build: `npm run build`
+  - Publish: `dist`
+  - SPA 라우팅: `/* -> /index.html` (200)
+- 자동 배포가 뜨지 않는 경우(Deploys가 비어있음)
+  - Netlify가 연결한 GitHub repo와 실제 push되는 repo가 다른 경우가 가장 흔한 원인
+  - 해결: Netlify Site settings에서 올바른 repo로 재연결 후 `Clear cache and deploy site`로 첫 배포 트리거
+
+### ✅ SEO / OG / 사이트 검증
+- `index.html` 메타 정리
+  - canonical: `https://egyptiantranslator.netlify.app/`
+  - Open Graph / Twitter 카드 메타 추가(og:url, og:image 포함)
+  - Google / Naver 사이트 소유 확인 메타 추가
+- 크롤링 보조 파일
+  - `public/robots.txt`에 sitemap 안내
+  - `public/sitemap.xml`에 주요 라우트(`/`, `/privacy`, `/terms`) 포함
+
+### ✅ 아이콘/미리보기(파비콘/OG 이미지)
+- `public/favicon.ico` 및 PNG 파비콘 세트 추가/교체
+  - `favicon-16x16.png`, `favicon-32x32.png`, `apple-touch-icon.png`
+- `public/og-image.png` 추가
+  - 카카오/메신저 미리보기 대응용
+- 생성/갱신 자동화
+  - `scripts/generate-packaging-assets.mjs`로 아이콘/OG 이미지 생성(의존성 없이 Node 내장 모듈로 생성)
+
+### ✅ AdSense 필수 요소 반영
+- `public/ads.txt` 추가/갱신
+  - `google.com, pub-9247464363490578, DIRECT, f08c47fec0942fa0`
+- 개인정보처리방침/약관 페이지 추가
+  - `src/pages/Privacy.tsx`, `src/pages/Terms.tsx`
+  - 라우팅: `/privacy`, `/terms`
+  - 푸터에 링크 노출
+
+### ✅ 결과물(카르투슈 카드) 복사/저장/공유 정리
+- “결과 카드 전체(카르투슈 + 이름 + 인증 뱃지)”를 한 덩어리로 캡처하도록 구조 고정
+  - 캡처 대상 DOM에 `id="cartouche-card"` 부여
+- Copy
+  - 유니코드 상형문자 텍스트 자체를 클립보드에 복사
+- Save
+  - `html2canvas`로 `#cartouche-card`를 고해상도 캡처
+  - 폰트 로딩 이슈 방지: `await document.fonts.ready` 기반 안정화
+- Share
+  - 모바일: Web Share API 사용
+  - 미지원 환경: URL/문구 클립보드 복사 폴백
+
+### ✅ 상형문자 렌더링 방식 변경(중요)
+- 기존(초기 설계): 이미지 기반 심볼(placeholder) 렌더링
+- 현재(적용 완료): 유니코드 Egyptian Hieroglyphs + 웹폰트 렌더링
+  - Google Fonts: `Noto Sans Egyptian Hieroglyphs`
+  - 매핑: `src/constants/hieroglyphMapping.ts`의 `HIEROGLYPH_MAP`, `romanizedToHieroglyphText()`
+
+### 🔜 남은 작업(사용자/외부 시스템에서 확인 필요)
+- Netlify가 올바른 GitHub repo(main 브랜치)를 감시하는지 최종 확인
+- 배포 후 아래 URL로 실물 확인
+  - `/ads.txt`, `/robots.txt`, `/sitemap.xml`, OG 미리보기
+- 카카오/페이스북/트위터 등은 OG 캐시가 남을 수 있어 “재스크랩(캐시 초기화)”가 필요할 수 있음
 
 ---
 
@@ -122,7 +189,7 @@ pharaoh-s-name-translator-main/
 ### 파일별 역할
 
 #### 설정 파일
-- **vite.config.ts**: 개발 서버 포트(8080), 경로 별칭(@), SWC 플러그인 설정
+- **vite.config.ts**: 개발 서버 포트(8085), 경로 별칭(@), SWC 플러그인 설정
 - **tailwind.config.ts**: 커스텀 컬러, 폰트, 애니메이션 키프레임 정의
 - **tsconfig.json**: TypeScript 컴파일 옵션 (strict mode, path mapping)
 - **components.json**: shadcn/ui 컴포넌트 설치 경로 및 스타일 설정
@@ -346,9 +413,9 @@ variants={{
 ```
 
 #### 현재 구현
-- **Placeholder 이미지**: via.placeholder.com 사용 (임시)
-- **지연 로딩**: `loading="lazy"` 속성으로 성능 최적화
-- **향후 개선**: 실제 상형문자 이미지 또는 웹폰트로 교체 필요
+- **유니코드 기반 상형문자 렌더링**: Egyptian Hieroglyphs 블록 문자를 직접 출력
+- **웹폰트 적용**: `Noto Sans Egyptian Hieroglyphs`로 일관된 렌더링 확보
+- **문자 매핑**: `HIEROGLYPH_MAP`(A-Z 매핑)을 통해 입력 로마자 → 상형문자 변환
 
 ---
 
@@ -901,7 +968,7 @@ bun install
 ### 🚀 개발 서버
 ```bash
 npm run dev
-# 기본 포트: http://localhost:8080
+# 기본 포트: http://localhost:8085
 ```
 
 ### 🏗️ 빌드
@@ -926,8 +993,8 @@ npm run preview      # 빌드 결과 미리보기
 
 ### 🎯 기능 추가
 1. **실제 상형문자 렌더링**
-   - 현재: Placeholder 이미지
-   - 개선: 웹폰트 또는 SVG 아이콘 세트
+  - 현재: 유니코드 + `Noto Sans Egyptian Hieroglyphs` 웹폰트로 렌더링(적용 완료)
+  - 개선: 매핑 정교화(표기 규칙/자모 처리/대체 규칙), 다양한 스타일(문자 간격/정렬) 옵션
 
 2. **사용자 갤러리**
    - 생성된 카르투슈 저장 및 공유
