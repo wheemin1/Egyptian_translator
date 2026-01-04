@@ -25,6 +25,15 @@
 
 > 기준일: 2025년 12월 29일
 
+### ✅ SEO(메타/구조화 데이터) 정리 업데이트
+> 갱신일: 2026년 1월 4일
+
+- `index.html`의 title/description/keywords/robots 메타를 “고대 이집트어 번역기” 키워드 세트로 정리
+- Open Graph에 `og:locale(ko_KR)`, `og:site_name` 추가
+- JSON-LD(`WebApplication`) 구조화 데이터 추가
+- `public/robots.txt`에 네이버 Yeti 명시 허용 추가
+- `public/sitemap.xml`에 `lastmod/changefreq/priority` 필드 추가
+
 이 섹션은 “분석 문서”에 더해, 실제 운영/배포를 위해 진행된 변경사항을 기록합니다.
 
 ### ✅ 배포(Netlify) 설정
