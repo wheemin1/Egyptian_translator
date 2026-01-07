@@ -1,12 +1,12 @@
 # Pharaoh's Name Translator
 
-Korean name → romanization → Egyptian hieroglyph **Unicode** glyphs, shown as a “Cartouche certificate”.
+Korean text → English translation → Egyptian hieroglyph **Unicode** glyphs, shown as a “Cartouche certificate”.
 
 Live: https://egyptiantranslator.netlify.app/
 
 ## What it does
 
-- Type your name (Korean supported) and optionally edit the romanized spelling
+- Type Korean text (or English text) and optionally edit the English spelling
 - Convert to an Egyptian-hieroglyph look using a simple letter→glyph mapping
 - Copy the **glyph text**, save a **high‑res PNG**, or share the result
 - Includes below-the-fold content (history/logic/FAQ/disclaimer) for SEO/AdSense readiness
@@ -22,10 +22,18 @@ Live: https://egyptiantranslator.netlify.app/
 
 ```bash
 npm install
-npm run dev
+
+# If you want translation (DeepL) locally, use Netlify dev so Functions work:
+npx netlify dev
+
+# Or run Vite only (UI works, but translation endpoint won't exist locally):
+# npm run dev
 ```
 
-Dev server: http://localhost:8085/
+Local URLs:
+
+- Netlify dev (Functions enabled): http://localhost:8085/
+- Vite dev (UI only): http://localhost:5173/
 
 ## Build
 
@@ -41,6 +49,14 @@ This repo is set up for Netlify continuous deployment.
 - Build command: `npm run build`
 - Publish directory: `dist`
 - SPA routing: handled via `netlify.toml`
+
+### Translation (DeepL) + secret handling
+
+This app calls a Netlify Function (`/.netlify/functions/translate`) to translate KO → EN.
+The DeepL key is **never** stored in the frontend.
+
+- Add `DEEPL_API_KEY` in Netlify → Site settings → Environment variables
+- Function source: `netlify/functions/translate.ts`
 
 ## SEO / Social / AdSense files
 
