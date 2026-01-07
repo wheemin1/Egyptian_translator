@@ -10,7 +10,33 @@
   targetPort = 5173
   port = 8085
 
-# SPA routing: send all routes to index.html
+# Netlify dev + Vite: allow Vite module endpoints to pass through.
+[[redirects]]
+  from = "/src/*"
+  to = "/src/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/@vite/*"
+  to = "/@vite/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/@fs/*"
+  to = "/@fs/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/@id/*"
+  to = "/@id/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/@react-refresh"
+  to = "/@react-refresh"
+  status = 200
+
+# SPA routing: send all other routes to index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
