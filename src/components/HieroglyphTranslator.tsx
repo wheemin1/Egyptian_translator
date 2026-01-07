@@ -77,13 +77,11 @@ const HieroglyphTranslator = () => {
         const next = translatedText ?? '';
         setPreviewEnglish(next);
 
-        // "Silent sync": keep visible English + right-side result updated in real time
-        // without triggering the heavy loading animation.
+        // "Light preview": keep the preview (and left English text) updated
+        // without touching the right-side result. The right panel updates only
+        // when the user explicitly clicks the translate button.
         if (next) {
           setRomanizedName(next);
-          if (isSplit && !isTranslating) {
-            setTranslatedRomanizedName(next);
-          }
         }
       } catch (error) {
         if ((error as Error).name !== 'AbortError') {
@@ -96,7 +94,7 @@ const HieroglyphTranslator = () => {
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [MAX_INPUT_CHARS, inputName, isManualEdit, isSplit, isTranslating, romanizedName]);
+  }, [MAX_INPUT_CHARS, inputName, isManualEdit, romanizedName]);
 
   const handleEditRomanized = () => {
     setIsEditingRomanized(true);
