@@ -19,7 +19,7 @@ const ActionButtons = ({ romanizedName, cardRef }: ActionButtonsProps) => {
   const handleCopy = async () => {
     try {
       const hieroglyphText = romanizedToHieroglyphText(romanizedName);
-      await navigator.clipboard.writeText(hieroglyphText || romanizedName.toUpperCase());
+      await navigator.clipboard.writeText(hieroglyphText || romanizedName);
       toast.success('상형문자가 복사되었습니다!', {
         className: 'font-sans',
       });
@@ -62,7 +62,7 @@ const ActionButtons = ({ romanizedName, cardRef }: ActionButtonsProps) => {
     const shareUrl = `${window.location.origin}/`;
     const shareData = {
       title: '고대 이집트어 번역기',
-      text: `${romanizedName.toUpperCase()}\n${hieroglyphText || ''}`.trim(),
+      text: `${romanizedName}\n${hieroglyphText || ''}`.trim(),
       url: shareUrl,
     };
 

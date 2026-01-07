@@ -74,7 +74,17 @@ const HieroglyphTranslator = () => {
 
         const data = (await response.json()) as { translatedText?: string };
         const translatedText = data.translatedText?.trim();
-        setPreviewEnglish(translatedText ?? '');
+        const next = translatedText ?? '';
+        setPreviewEnglish(next);
+
+        // "Silent sync": keep visible English + right-side result updated in real time
+        // without triggering the heavy loading animation.
+        if (next) {
+          setRomanizedName(next);
+          if (isSplit && !isTranslating) {
+            setTranslatedRomanizedName(next);
+          }
+        }
       } catch (error) {
         if ((error as Error).name !== 'AbortError') {
           setPreviewEnglish('');
@@ -86,7 +96,7 @@ const HieroglyphTranslator = () => {
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [MAX_INPUT_CHARS, inputName, isManualEdit, romanizedName]);
+  }, [MAX_INPUT_CHARS, inputName, isManualEdit, isSplit, isTranslating, romanizedName]);
 
   const handleEditRomanized = () => {
     setIsEditingRomanized(true);
@@ -162,13 +172,9 @@ const HieroglyphTranslator = () => {
     }
   }, [inputName, isManualEdit, isTranslating, romanizedName]);
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !isEditingRomanized) {
-      handleTranslate();
-    }
-  };
-
   const handleInputNameChange = (value: string) => {
+    // Typing Korean again implies "switch back to auto-translation mode".
+    setIsManualEdit(false);
     setInputName(value.slice(0, MAX_INPUT_CHARS));
   };
 
@@ -217,7 +223,8 @@ const HieroglyphTranslator = () => {
                 value={inputName}
                 onChange={(e) => handleInputNameChange(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey && !isEditingRomanized) {
+                  // Enter: newline (default). Ctrl/Cmd+Enter: submit.
+                  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !isEditingRomanized) {
                     e.preventDefault();
                     handleTranslate();
                   }
@@ -229,7 +236,7 @@ const HieroglyphTranslator = () => {
 
               {previewEnglish && (
                 <p className="mt-2 text-xs text-muted-foreground text-center">
-                  {previewEnglish.toUpperCase()}
+                  {previewEnglish}
                 </p>
               )}
             </div>
@@ -258,7 +265,7 @@ const HieroglyphTranslator = () => {
                         />
                       ) : (
                         <span className="text-lg romanized-text text-soft-black">
-                          {romanizedName.toUpperCase()}
+                          {romanizedName}
                         </span>
                       )}
                       <button

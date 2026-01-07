@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
 import HieroglyphSymbol from './HieroglyphSymbol';
-import { extractLetters } from '@/lib/romanizer';
 
 interface CartoucheProps {
   romanizedName: string;
@@ -9,7 +8,27 @@ interface CartoucheProps {
 }
 
 const Cartouche = ({ romanizedName, isVisible }: CartoucheProps) => {
-  const letters = extractLetters(romanizedName);
+  type Token =
+    | { kind: 'letter'; value: string }
+    | { kind: 'space' }
+    | { kind: 'newline' };
+
+  const tokens: Token[] = [];
+  for (const ch of romanizedName) {
+    if (ch === ' ') {
+      tokens.push({ kind: 'space' });
+      continue;
+    }
+    if (ch === '\n') {
+      tokens.push({ kind: 'newline' });
+      continue;
+    }
+    if (/[a-zA-Z]/.test(ch)) {
+      tokens.push({ kind: 'letter', value: ch.toUpperCase() });
+      continue;
+    }
+    // Ignore punctuation/symbols for now.
+  }
 
   return (
     <AnimatePresence>
@@ -44,20 +63,32 @@ const Cartouche = ({ romanizedName, isVisible }: CartoucheProps) => {
                 }
               }}
             >
-              {letters.map((letter, index) => (
-                <HieroglyphSymbol key={`${letter}-${index}`} letter={letter} index={index} />
-              ))}
+              {tokens.map((token, index) => {
+                if (token.kind === 'letter') {
+                  return (
+                    <HieroglyphSymbol
+                      key={`l-${token.value}-${index}`}
+                      letter={token.value}
+                      index={index}
+                    />
+                  );
+                }
+                if (token.kind === 'space') {
+                  return <div key={`s-${index}`} className="w-6 h-6 shrink-0" aria-hidden="true" />;
+                }
+                return <div key={`n-${index}`} className="w-full h-0" aria-hidden="true" />;
+              })}
             </motion.div>
 
             {/* Romanized Name */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 + letters.length * 0.08 }}
+              transition={{ delay: 0.5 + tokens.length * 0.08 }}
               className="text-center mt-3"
             >
               <span className="romanized-text text-sm text-soft-black tracking-[0.25em]">
-                {romanizedName.toUpperCase()}
+                {romanizedName}
               </span>
             </motion.div>
 
@@ -69,7 +100,7 @@ const Cartouche = ({ romanizedName, isVisible }: CartoucheProps) => {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 + letters.length * 0.08 }}
+            transition={{ delay: 0.8 + tokens.length * 0.08 }}
             className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border/50"
           >
             <ShieldCheck className="w-4 h-4 text-gold" />
