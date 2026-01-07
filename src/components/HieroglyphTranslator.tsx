@@ -8,10 +8,13 @@ import LoadingState from '@/components/LoadingState';
 import { VIKING_RUNE_CONVERTER_URL } from '@/constants/externalLinks';
 
 const HieroglyphTranslator = () => {
+  const MAX_INPUT_CHARS = 30;
+
   // State Management
   const [inputName, setInputName] = useState('');
   const [romanizedName, setRomanizedName] = useState('');
   const [translatedRomanizedName, setTranslatedRomanizedName] = useState('');
+  const [previewEnglish, setPreviewEnglish] = useState('');
   const [isManualEdit, setIsManualEdit] = useState(false);
   const [isEditingRomanized, setIsEditingRomanized] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -19,6 +22,7 @@ const HieroglyphTranslator = () => {
   const [isSplit, setIsSplit] = useState(false);
   
   const cardRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const romanizedInputRef = useRef<HTMLInputElement>(null);
 
   // Do not auto-translate on typing; keep previous result until user clicks the button.
@@ -28,6 +32,61 @@ const HieroglyphTranslator = () => {
       setIsManualEdit(false);
     }
   }, [inputName, romanizedName]);
+
+  // Auto-expanding textarea ("숨 쉬는" 입력창)
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = '0px';
+    el.style.height = `${Math.min(el.scrollHeight, 240)}px`;
+  }, [inputName]);
+
+  // Debounced KO -> EN preview (0.5s after typing stops)
+  useEffect(() => {
+    const sourceText = inputName.trim();
+    const hasHangul = /[\u3131-\u318E\u314F-\u3163\uAC00-\uD7A3]/.test(sourceText);
+
+    if (!sourceText || !hasHangul) {
+      setPreviewEnglish('');
+      return;
+    }
+
+    // If user is manually editing English, don't overwrite the experience with preview.
+    if (isManualEdit && romanizedName.trim()) {
+      setPreviewEnglish('');
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(async () => {
+      try {
+        const response = await fetch('/.netlify/functions/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: sourceText.slice(0, MAX_INPUT_CHARS) }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          setPreviewEnglish('');
+          return;
+        }
+
+        const data = (await response.json()) as { translatedText?: string };
+        const translatedText = data.translatedText?.trim();
+        setPreviewEnglish(translatedText ?? '');
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          setPreviewEnglish('');
+        }
+      }
+    }, 500);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timeout);
+    };
+  }, [MAX_INPUT_CHARS, inputName, isManualEdit, romanizedName]);
 
   const handleEditRomanized = () => {
     setIsEditingRomanized(true);
@@ -109,6 +168,10 @@ const HieroglyphTranslator = () => {
     }
   };
 
+  const handleInputNameChange = (value: string) => {
+    setInputName(value.slice(0, MAX_INPUT_CHARS));
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -148,14 +211,27 @@ const HieroglyphTranslator = () => {
           >
             {/* Korean Input (Field 1) */}
             <div className="mb-6">
-              <input
-                type="text"
+              <textarea
+                ref={inputRef}
+                rows={1}
                 value={inputName}
-                onChange={(e) => setInputName(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onChange={(e) => handleInputNameChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && !isEditingRomanized) {
+                    e.preventDefault();
+                    handleTranslate();
+                  }
+                }}
                 placeholder="번역할 내용을 입력하세요"
-                className="w-full bg-transparent text-2xl md:text-3xl text-center text-soft-black placeholder:text-muted-foreground/50 focus:outline-none py-4 gold-input"
+                maxLength={MAX_INPUT_CHARS}
+                className="w-full bg-transparent text-2xl md:text-3xl text-center text-soft-black placeholder:text-muted-foreground/50 focus:outline-none py-4 gold-input resize-none overflow-hidden leading-relaxed"
               />
+
+              {previewEnglish && (
+                <p className="mt-2 text-xs text-muted-foreground text-center">
+                  {previewEnglish.toUpperCase()}
+                </p>
+              )}
             </div>
 
             {/* Romanized Input (Field 2) */}
