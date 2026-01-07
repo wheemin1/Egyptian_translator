@@ -192,10 +192,10 @@ const HieroglyphTranslator = () => {
           className="text-center mb-8"
         >
           <h1 className="text-2xl md:text-3xl font-bold text-soft-black tracking-tight mb-2">
-            고대 이집트어 번역기
+            이집트 상형문자 번역기
           </h1>
           <p className="text-sm text-gray">
-            파라오의 언어로 당신을 기억해보세요
+            파라오의 언어로 당신의 이름과 의미를 새겨보세요
           </p>
         </motion.header>
 
