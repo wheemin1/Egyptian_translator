@@ -63,7 +63,8 @@
 
   body {
     @apply antialiased;
-    font-family: 'Noto Serif KR', serif;
+    font-family: system-ui, -apple-system, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', Arial,
+      'Noto Sans', sans-serif;
     background-color: hsl(var(--alabaster));
   }
 }

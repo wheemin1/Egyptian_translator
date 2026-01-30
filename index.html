@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>이집트 상형문자 번역기 : 한글 이름·문장 뜻까지 완벽 변환 (무료)</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <meta
       name="description"
       content="단순 발음 변환이 아닙니다. DeepL AI를 통해 한글 문장의 '뜻'을 분석하여 정확한 고대 이집트 상형문자로 번역합니다. 나만의 카르투슈 타투 도안을 고화질로 저장하세요."
@@ -62,9 +65,20 @@
       }
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Noto+Serif+KR:wght@400;500;600;700&family=Noto+Sans+Egyptian+Hieroglyphs&display=swap" rel="stylesheet">
+    <!-- Fonts: keep initial payload small (mobile LCP). -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Egyptian+Hieroglyphs&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+Egyptian+Hieroglyphs&display=swap"
+      />
+    </noscript>
   </head>
 
   <body>

@@ -14,9 +14,24 @@ export default {
     },
     extend: {
       fontFamily: {
-        serif: ["Noto Serif KR", "serif"],
+        serif: [
+          "ui-serif",
+          "Georgia",
+          "Cambria",
+          "Times New Roman",
+          "Times",
+          "serif",
+        ],
         cinzel: ["Cinzel", "serif"],
-        inter: ["Inter", "sans-serif"],
+        inter: [
+          "system-ui",
+          "-apple-system",
+          "Segoe UI",
+          "Apple SD Gothic Neo",
+          "Malgun Gothic",
+          "Arial",
+          "sans-serif",
+        ],
       },
       colors: {
         border: "hsl(var(--border))",
