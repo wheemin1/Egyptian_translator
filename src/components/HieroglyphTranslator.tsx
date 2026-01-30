@@ -24,6 +24,7 @@ const HieroglyphTranslator = () => {
   const cardRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const romanizedInputRef = useRef<HTMLInputElement>(null);
+  const inputResizeRafRef = useRef<number | null>(null);
 
   // Do not auto-translate on typing; keep previous result until user clicks the button.
   // Reset edit intent only when both fields are cleared.
@@ -37,8 +38,25 @@ const HieroglyphTranslator = () => {
   useEffect(() => {
     const el = inputRef.current;
     if (!el) return;
-    el.style.height = '0px';
-    el.style.height = `${Math.min(el.scrollHeight, 240)}px`;
+
+    if (inputResizeRafRef.current !== null) {
+      window.cancelAnimationFrame(inputResizeRafRef.current);
+    }
+
+    inputResizeRafRef.current = window.requestAnimationFrame(() => {
+      // Batch DOM reads/writes into one animation frame to reduce forced reflow.
+      el.style.height = 'auto';
+      const nextHeight = Math.min(el.scrollHeight, 240);
+      el.style.height = `${nextHeight}px`;
+      inputResizeRafRef.current = null;
+    });
+
+    return () => {
+      if (inputResizeRafRef.current !== null) {
+        window.cancelAnimationFrame(inputResizeRafRef.current);
+        inputResizeRafRef.current = null;
+      }
+    };
   }, [inputName]);
 
   // Debounced KO -> EN preview (0.5s after typing stops)
@@ -305,46 +323,50 @@ const HieroglyphTranslator = () => {
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 className="glass-card rounded-3xl p-8 md:p-10 md:border-l md:border-border/40"
               >
-                {/* Loading State (right side) */}
-                <AnimatePresence>
-                  {isTranslating ? (
-                    <LoadingState />
-                  ) : (
-                    <div>
-                      {/* Result Card (capture target) */}
-                      <div
-                        id="cartouche-card"
-                        className="flex flex-col items-center rounded-2xl p-8 bg-[#F9F7F2]"
-                      >
-                        <Cartouche romanizedName={translatedRomanizedName} isVisible={showResult} />
+                <div className="min-h-[420px] md:min-h-[520px] flex flex-col">
+                  {/* Loading State / Result (right side) */}
+                  <AnimatePresence>
+                    {isTranslating ? (
+                      <div className="flex-1 flex items-center justify-center">
+                        <LoadingState />
                       </div>
+                    ) : (
+                      <div className="flex flex-col flex-1">
+                        {/* Result Card (capture target) */}
+                        <div
+                          id="cartouche-card"
+                          className="flex flex-col items-center justify-center rounded-2xl p-8 bg-[#F9F7F2] min-h-[320px]"
+                        >
+                          <Cartouche romanizedName={translatedRomanizedName} isVisible={showResult} />
+                        </div>
 
-                      {/* Action Buttons (below result) */}
-                      <AnimatePresence>
-                        {showResult && (
-                          <div className="mt-8">
-                            <ActionButtons
-                              romanizedName={translatedRomanizedName}
-                              cardRef={cardRef}
-                            />
+                        {/* Action Buttons (below result) */}
+                        <AnimatePresence>
+                          {showResult && (
+                            <div className="mt-8">
+                              <ActionButtons
+                                romanizedName={translatedRomanizedName}
+                                cardRef={cardRef}
+                              />
 
-                            {/* Cross-promo banner (below action icons) */}
-                            <a
-                              href={VIKING_RUNE_CONVERTER_URL}
-                              className="mt-4 flex w-full items-center justify-between gap-3 rounded-xl border border-gold-dark/25 bg-card/70 px-4 py-3 text-sm text-soft-black transition-colors hover:bg-card"
-                              aria-label="룬 문자 변환기로 이동"
-                            >
-                              <span className="text-muted-foreground">
-                                내 이름을 <span className="text-gold-dark font-semibold">고대 북유럽 룬 문자</span>로도 보고 싶다면?
-                              </span>
-                              <ChevronRight className="h-4 w-4 shrink-0 text-gold-dark" aria-hidden="true" />
-                            </a>
-                          </div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  )}
-                </AnimatePresence>
+                              {/* Cross-promo banner (below action icons) */}
+                              <a
+                                href={VIKING_RUNE_CONVERTER_URL}
+                                className="mt-4 flex w-full items-center justify-between gap-3 rounded-xl border border-gold-dark/25 bg-card/70 px-4 py-3 text-sm text-soft-black transition-colors hover:bg-card"
+                                aria-label="룬 문자 변환기로 이동"
+                              >
+                                <span className="text-muted-foreground">
+                                  내 이름을 <span className="text-gold-dark font-semibold">고대 북유럽 룬 문자</span>로도 보고 싶다면?
+                                </span>
+                                <ChevronRight className="h-4 w-4 shrink-0 text-gold-dark" aria-hidden="true" />
+                              </a>
+                            </div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

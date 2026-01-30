@@ -1,7 +1,6 @@
 import { Copy, Download, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import html2canvas from 'html2canvas';
 import { romanizedToHieroglyphText } from '@/constants/hieroglyphMapping';
 import {
   Tooltip,
@@ -36,6 +35,8 @@ const ActionButtons = ({ romanizedName, cardRef }: ActionButtonsProps) => {
       if (document.fonts?.ready) {
         await document.fonts.ready;
       }
+
+      const { default: html2canvas } = await import('html2canvas');
 
       const canvas = await html2canvas(target, {
         backgroundColor: '#F9F7F2',
